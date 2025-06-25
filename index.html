@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        :root {
+            --ifood-red: #ea1d2c;
+            --ifood-dark-red: #c2121f;
+            --ifood-gray: #f7f7f7;
+            --ifood-dark-gray: #3f3e3e;
+            --ifood-light-gray: #eaeaea;
+        }
+        
         html {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -21,10 +29,12 @@
         }
         .product-card {
             transition: transform 0.3s ease;
+            border-radius: 8px;
+            border: 1px solid var(--ifood-light-gray);
         }
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.1), 0 4px 6px -2px rgba(239, 68, 68, 0.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         .cart-item {
             transition: all 0.3s ease;
@@ -43,6 +53,7 @@
             width: 100%;
             padding-top: 75%; /* 4:3 aspect ratio */
             overflow: hidden;
+            border-radius: 8px 8px 0 0;
         }
         .image-container img {
             position: absolute;
@@ -61,108 +72,343 @@
         .category-card .image-container {
             padding-top: 75%; /* Same aspect ratio as products */
         }
-        .category-card:hover {
-            border-color: #ef4444;
+        
+        /* Header styles */
+        .header {
+            background: linear-gradient(to right, var(--ifood-red), var(--ifood-dark-red));
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Navigation styles */
+        .nav-item {
+            position: relative;
+        }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background-color: var(--ifood-red);
+            border-radius: 3px;
+        }
+        
+        /* Button styles */
+        .ifood-btn {
+            background-color: var(--ifood-red);
+            transition: background-color 0.3s;
+        }
+        .ifood-btn:hover {
+            background-color: var(--ifood-dark-red);
+        }
+        
+        /* Cart styles */
+        .cart-badge {
+            background-color: var(--ifood-dark-red);
+        }
+        
+        /* Input styles */
+        .ifood-input:focus {
+            border-color: var(--ifood-red);
+            box-shadow: 0 0 0 1px var(--ifood-red);
         }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans dark:bg-gray-900 dark:text-white">
+<body class="bg-[#f7f7f7] text-[#3f3e3e] font-sans">
 
     <!-- Botão para Alternar Modo Escuro/Claro -->
-    <button id="darkModeToggle" class="fixed top-4 right-4 z-50 p-3 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors">
+    <button id="darkModeToggle" class="fixed top-4 right-4 z-50 p-3 bg-[#3f3e3e] text-white rounded-full shadow-lg hover:bg-[#2a2a2a] transition-colors">
         <i class="fas fa-adjust"></i>
     </button>
 
     <!-- Ícone do Carrinho -->
-    <button id="cartButton" class="fixed bottom-6 right-6 z-50 p-4 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors">
+    <button id="cartButton" class="fixed bottom-6 right-6 z-50 p-4 bg-[#ea1d2c] text-white rounded-full shadow-lg hover:bg-[#c2121f] transition-colors">
         <i class="fas fa-shopping-cart"></i>
-        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hidden">0</span>
+        <span id="cartCount" class="absolute -top-2 -right-2 bg-[#c2121f] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hidden">0</span>
     </button>
 
     <!-- Menu de Navegação -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg z-40 md:top-0 md:bottom-auto">
+    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-40 md:top-0 md:bottom-auto border-t border-[#eaeaea]">
         <div class="container mx-auto flex justify-around md:justify-center md:space-x-10">
-            <button onclick="showPage('home')" class="page-link active py-3 px-4 text-red-500 border-t-2 border-red-500 flex flex-col items-center">
+            <button onclick="showPage('home')" class="nav-item page-link active py-3 px-4 text-[#ea1d2c] flex flex-col items-center">
                 <i class="fas fa-home text-xl mb-1"></i>
                 <span class="text-xs">Início</span>
             </button>
-            <button onclick="showPage('hamburgueres')" class="page-link py-3 px-4 text-gray-500 dark:text-gray-400 flex flex-col items-center hover:text-red-500 transition-colors">
+            <button onclick="showPage('hamburgueres')" class="nav-item page-link py-3 px-4 text-[#717171] flex flex-col items-center hover:text-[#ea1d2c] transition-colors">
                 <i class="fas fa-hamburger text-xl mb-1"></i>
                 <span class="text-xs">Hambúrgueres</span>
             </button>
-            <button onclick="showPage('bebidas')" class="page-link py-3 px-4 text-gray-500 dark:text-gray-400 flex flex-col items-center hover:text-red-500 transition-colors">
+            <button onclick="showPage('bebidas')" class="nav-item page-link py-3 px-4 text-[#717171] flex flex-col items-center hover:text-[#ea1d2c] transition-colors">
                 <i class="fas fa-glass-whiskey text-xl mb-1"></i>
                 <span class="text-xs">Bebidas</span>
             </button>
-            <button onclick="showPage('sobremesas')" class="page-link py-3 px-4 text-gray-500 dark:text-gray-400 flex flex-col items-center hover:text-red-500 transition-colors">
+            <button onclick="showPage('sobremesas')" class="nav-item page-link py-3 px-4 text-[#717171] flex flex-col items-center hover:text-[#ea1d2c] transition-colors">
                 <i class="fas fa-ice-cream text-xl mb-1"></i>
                 <span class="text-xs">Sobremesas</span>
             </button>
-            <button onclick="showPage('pizzas')" class="page-link py-3 px-4 text-gray-500 dark:text-gray-400 flex flex-col items-center hover:text-red-500 transition-colors">
+            <button onclick="showPage('pizzas')" class="nav-item page-link py-3 px-4 text-[#717171] flex flex-col items-center hover:text-[#ea1d2c] transition-colors">
                 <i class="fas fa-pizza-slice text-xl mb-1"></i>
                 <span class="text-xs">Pizzas</span>
+            </button>
+            <button onclick="toggleUserMenu()" class="nav-item page-link py-3 px-4 text-[#717171] flex flex-col items-center hover:text-[#ea1d2c] transition-colors">
+                <i class="fas fa-user text-xl mb-1"></i>
+                <span class="text-xs" id="userStatus">Entrar</span>
             </button>
         </div>
     </nav>
 
+    <!-- Menu do Usuário (Dropdown) -->
+    <div id="userMenu" class="fixed right-4 top-16 z-50 bg-white rounded-lg shadow-lg hidden w-48">
+        <div id="userNotLoggedIn" class="p-4">
+            <button onclick="showPage('login')" class="w-full text-left py-2 px-3 hover:bg-[#f7f7f7] rounded">
+                <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+            </button>
+            <button onclick="showPage('register')" class="w-full text-left py-2 px-3 hover:bg-[#f7f7f7] rounded">
+                <i class="fas fa-user-plus mr-2"></i> Cadastrar
+            </button>
+        </div>
+        <div id="userLoggedIn" class="p-4 hidden">
+            <div class="px-3 py-2 text-sm border-b border-[#eaeaea]">
+                Logado como <span id="loggedInUserEmail" class="font-medium"></span>
+            </div>
+            <button onclick="showPage('profile')" class="w-full text-left py-2 px-3 hover:bg-[#f7f7f7] rounded">
+                <i class="fas fa-user-circle mr-2"></i> Meu Perfil
+            </button>
+            <button onclick="logout()" class="w-full text-left py-2 px-3 hover:bg-[#f7f7f7] rounded text-[#ea1d2c]">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </button>
+        </div>
+    </div>
+
     <!-- Páginas do Sistema -->
+
+    <!-- Página de Login -->
+    <div id="login" class="page pb-16 md:pb-0 md:pt-16">
+        <div class="container mx-auto px-4 py-6">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-sign-in-alt text-[#ea1d2c] mr-2"></i>
+                        Entrar na Conta
+                    </h1>
+                    <button onclick="showPage('home')" class="text-[#ea1d2c] text-sm font-medium">
+                        <i class="fas fa-chevron-left mr-1"></i> Voltar
+                    </button>
+                </div>
+                
+                <form id="loginForm" class="space-y-4">
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">E-mail</label>
+                        <input type="email" id="loginEmail" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Senha</label>
+                        <input type="password" id="loginPassword" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3 ifood-btn text-white rounded-lg font-bold hover:bg-[#c2121f] transition-colors">
+                            Entrar
+                        </button>
+                    </div>
+                    
+                    <div class="text-center text-sm text-[#717171] pt-2">
+                        Não tem uma conta? 
+                        <button onclick="showPage('register')" class="text-[#ea1d2c] font-medium">Cadastre-se</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Página de Registro -->
+    <div id="register" class="page pb-16 md:pb-0 md:pt-16">
+        <div class="container mx-auto px-4 py-6">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-user-plus text-[#ea1d2c] mr-2"></i>
+                        Criar Conta
+                    </h1>
+                    <button onclick="showPage('home')" class="text-[#ea1d2c] text-sm font-medium">
+                        <i class="fas fa-chevron-left mr-1"></i> Voltar
+                    </button>
+                </div>
+                
+                <form id="registerForm" class="space-y-4">
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Nome Completo</label>
+                        <input type="text" id="registerName" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">E-mail</label>
+                        <input type="email" id="registerEmail" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Telefone</label>
+                        <input type="tel" id="registerPhone" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none" 
+                               placeholder="(00) 00000-0000">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Senha</label>
+                        <input type="password" id="registerPassword" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Confirmar Senha</label>
+                        <input type="password" id="registerConfirmPassword" required 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
+                    
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-3 ifood-btn text-white rounded-lg font-bold hover:bg-[#c2121f] transition-colors">
+                            Cadastrar
+                        </button>
+                    </div>
+                    
+                    <div class="text-center text-sm text-[#717171] pt-2">
+                        Já tem uma conta? 
+                        <button onclick="showPage('login')" class="text-[#ea1d2c] font-medium">Faça login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Página de Perfil -->
+    <div id="profile" class="page pb-16 md:pb-0 md:pt-16">
+        <div class="container mx-auto px-4 py-6">
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-user-circle text-[#ea1d2c] mr-2"></i>
+                        Meu Perfil
+                    </h1>
+                    <button onclick="showPage('home')" class="text-[#ea1d2c] text-sm font-medium">
+                        <i class="fas fa-chevron-left mr-1"></i> Voltar
+                    </button>
+                </div>
+                
+                <div id="profileInfo" class="space-y-4">
+                    <div class="flex justify-center mb-4">
+                        <div class="w-20 h-20 rounded-full bg-[#f7f7f7] flex items-center justify-center text-3xl text-[#ea1d2c]">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Nome</label>
+                        <div class="p-3 bg-[#f7f7f7] rounded-lg" id="profileName"></div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">E-mail</label>
+                        <div class="p-3 bg-[#f7f7f7] rounded-lg" id="profileEmail"></div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Telefone</label>
+                        <div class="p-3 bg-[#f7f7f7] rounded-lg" id="profilePhone"></div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button onclick="logout()" class="w-full py-3 bg-[#3f3e3e] text-white rounded-lg font-bold hover:bg-[#2a2a2a] transition-colors">
+                            Sair da Conta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Página Inicial -->
     <div id="home" class="page active pb-16 md:pb-0 md:pt-16">
-         <header class="bg-red-500 text-white py-8 text-center">
-            <div class="container mx-auto px-4">
-                <img src="images/lo.png" alt="Logo" class="w-24 h-24 mx-auto rounded-full border-4 border-white mb-4">
-                <h1 class="text-3xl font-bold">Nintendo Burg</h1>
-                <p class="mt-2">Os melhores sabores da cidade</p>
+         <header class="header text-white py-4 text-center">
+            <div class="container mx-auto px-4 flex items-center justify-between">
+                <div class="flex items-center">
+                    <img src="images/lo.png" alt="Logo" class="w-12 h-12 rounded-full border-2 border-white mr-3">
+                    <div class="text-left">
+                        <h1 class="text-xl font-bold">Nintendo Burg</h1>
+                        <p class="text-xs opacity-80">Os melhores sabores da cidade</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <span class="text-sm"><i class="fas fa-star text-yellow-300 mr-1"></i> 4.8</span>
+                    <span class="text-sm">• 30-40 min</span>
+                </div>
             </div>
         </header>
 
-        <main class="container mx-auto px-4 py-8">
-            <h2 class="text-2xl font-bold mb-6 text-center">Nossas Categorias</h2>
+        <main class="container mx-auto px-4 py-6">
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="text-lg font-bold">Nossas Categorias</h2>
+                    <a href="#" class="text-[#ea1d2c] text-sm font-medium">Ver todas</a>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Card Hambúrgueres -->
+                    <div onclick="showPage('hamburgueres')" class="category-card bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer product-card">
+                        <div class="image-container">
+                            <img src="images/Bacon Burguer.jpeg" alt="Hambúrgueres">
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-bold text-[#ea1d2c]">Hambúrgueres</h3>
+                            <p class="text-[#717171] text-xs mt-1">Deliciosas opções</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Bebidas -->
+                    <div onclick="showPage('bebidas')" class="category-card bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer product-card">
+                        <div class="image-container">
+                            <img src="images/bebidas.jpeg" alt="Bebidas">
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-bold text-[#ea1d2c]">Bebidas</h3>
+                            <p class="text-[#717171] text-xs mt-1">Refrigerantes e mais</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Sobremesas -->
+                    <div onclick="showPage('sobremesas')" class="category-card bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer product-card">
+                        <div class="image-container">
+                            <img src="images/Brownie.jpeg" alt="Sobremesas">
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-bold text-[#ea1d2c]">Sobremesas</h3>
+                            <p class="text-[#717171] text-xs mt-1">Doces deliciosos</p>
+                        </div>
+                    </div>
+
+                    <!-- Card Pizzas -->
+                    <div onclick="showPage('pizzas')" class="category-card bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer product-card">
+                        <div class="image-container">
+                            <img src="images/pizza.jpeg" alt="Pizzas">
+                        </div>
+                        <div class="p-3">
+                            <h3 class="font-bold text-[#ea1d2c]">Pizzas</h3>
+                            <p class="text-[#717171] text-xs mt-1">Massas incríveis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Card Hambúrgueres -->
-                <div onclick="showPage('hamburgueres')" class="category-card bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md cursor-pointer product-card">
-                    <div class="image-container">
-                        <img src="images/Bacon Burguer.jpeg" alt="Hambúrgueres">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-red-500">Hambúrgueres</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mt-2">Deliciosas opções de carne e vegetais</p>
-                    </div>
-                </div>
-
-                <!-- Card Bebidas -->
-                <div onclick="showPage('bebidas')" class="category-card bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md cursor-pointer product-card">
-                    <div class="image-container">
-                        <img src="images/bebidas.jpeg" alt="Bebidas">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-red-500">Bebidas</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mt-2">Refrigerantes, sucos e cervejas</p>
-                    </div>
-                </div>
-
-                <!-- Card Sobremesas -->
-                <div onclick="showPage('sobremesas')" class="category-card bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md cursor-pointer product-card">
-                    <div class="image-container">
-                        <img src="images/Brownie.jpeg" alt="Sobremesas">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-red-500">Sobremesas</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mt-2">Doces para finalizar sua refeição</p>
-                    </div>
-                </div>
-
-                <!-- Card Pizzas -->
-                <div onclick="showPage('pizzas')" class="category-card bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md cursor-pointer product-card">
-                    <div class="image-container">
-                        <img src="images/pizza.jpeg" alt="Pizzas">
-                    </div>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-red-500">Pizzas</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mt-2">As melhores massas e recheios</p>
-                    </div>
+            <div class="bg-white rounded-lg shadow-sm p-4">
+                <h2 class="text-lg font-bold mb-4">Mais pedidos</h2>
+                <div id="featuredProducts" class="space-y-4">
+                    <!-- Produtos em destaque serão carregados aqui -->
                 </div>
             </div>
         </main>
@@ -171,15 +417,19 @@
     <!-- Página de Hambúrgueres -->
     <div id="hamburgueres" class="page pb-16 md:pb-0 md:pt-16">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-2xl font-bold mb-6 flex items-center">
-                <i class="fas fa-hamburger text-red-500 mr-2"></i>
-                Hambúrgueres
-            </h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-hamburger text-[#ea1d2c] mr-2"></i>
+                    Hambúrgueres
+                </h1>
+                <div class="relative w-1/2">
+                    <i class="fas fa-search absolute left-3 top-3 text-[#717171]"></i>
+                    <input type="text" id="searchBurgers" placeholder="Buscar hambúrgueres" 
+                           class="w-full pl-10 pr-4 py-2 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                </div>
+            </div>
             
-            <input type="text" id="searchBurgers" placeholder="Pesquisar hambúrgueres..." 
-                   class="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-            
-            <div id="burgersList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="burgersList" class="grid grid-cols-1 gap-4">
                 <!-- Produtos serão carregados aqui via JavaScript -->
             </div>
         </div>
@@ -188,15 +438,19 @@
     <!-- Página de Bebidas -->
     <div id="bebidas" class="page pb-16 md:pb-0 md:pt-16">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-2xl font-bold mb-6 flex items-center">
-                <i class="fas fa-glass-whiskey text-red-500 mr-2"></i>
-                Bebidas
-            </h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-glass-whiskey text-[#ea1d2c] mr-2"></i>
+                    Bebidas
+                </h1>
+                <div class="relative w-1/2">
+                    <i class="fas fa-search absolute left-3 top-3 text-[#717171]"></i>
+                    <input type="text" id="searchDrinks" placeholder="Buscar bebidas" 
+                           class="w-full pl-10 pr-4 py-2 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                </div>
+            </div>
             
-            <input type="text" id="searchDrinks" placeholder="Pesquisar bebidas..." 
-                   class="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-            
-            <div id="drinksList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="drinksList" class="grid grid-cols-1 gap-4">
                 <!-- Produtos serão carregados aqui via JavaScript -->
             </div>
         </div>
@@ -205,15 +459,19 @@
     <!-- Página de Sobremesas -->
     <div id="sobremesas" class="page pb-16 md:pb-0 md:pt-16">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-2xl font-bold mb-6 flex items-center">
-                <i class="fas fa-ice-cream text-red-500 mr-2"></i>
-                Sobremesas
-            </h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-ice-cream text-[#ea1d2c] mr-2"></i>
+                    Sobremesas
+                </h1>
+                <div class="relative w-1/2">
+                    <i class="fas fa-search absolute left-3 top-3 text-[#717171]"></i>
+                    <input type="text" id="searchDesserts" placeholder="Buscar sobremesas" 
+                           class="w-full pl-10 pr-4 py-2 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                </div>
+            </div>
             
-            <input type="text" id="searchDesserts" placeholder="Pesquisar sobremesas..." 
-                   class="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-            
-            <div id="dessertsList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="dessertsList" class="grid grid-cols-1 gap-4">
                 <!-- Produtos serão carregados aqui via JavaScript -->
             </div>
         </div>
@@ -222,15 +480,19 @@
     <!-- Página de Pizzas -->
     <div id="pizzas" class="page pb-16 md:pb-0 md:pt-16">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-2xl font-bold mb-6 flex items-center">
-                <i class="fas fa-pizza-slice text-red-500 mr-2"></i>
-                Pizzas
-            </h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-pizza-slice text-[#ea1d2c] mr-2"></i>
+                    Pizzas
+                </h1>
+                <div class="relative w-1/2">
+                    <i class="fas fa-search absolute left-3 top-3 text-[#717171]"></i>
+                    <input type="text" id="searchPizzas" placeholder="Buscar pizzas" 
+                           class="w-full pl-10 pr-4 py-2 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                </div>
+            </div>
             
-            <input type="text" id="searchPizzas" placeholder="Pesquisar pizzas..." 
-                   class="w-full p-3 mb-6 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-            
-            <div id="pizzasList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div id="pizzasList" class="grid grid-cols-1 gap-4">
                 <!-- Produtos serão carregados aqui via JavaScript -->
             </div>
         </div>
@@ -239,32 +501,40 @@
     <!-- Página do Carrinho -->
     <div id="carrinho" class="page pb-16 md:pb-0 md:pt-16">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-2xl font-bold mb-6 flex items-center">
-                <i class="fas fa-shopping-cart text-red-500 mr-2"></i>
-                Seu Carrinho
-            </h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-shopping-cart text-[#ea1d2c] mr-2"></i>
+                    Seu Carrinho
+                </h1>
+                <button onclick="showPage('home')" class="text-[#ea1d2c] text-sm font-medium">
+                    <i class="fas fa-chevron-left mr-1"></i> Continuar comprando
+                </button>
+            </div>
             
             <div id="cartItems" class="mb-6 space-y-4">
                 <!-- Itens do carrinho serão carregados aqui -->
-                <p class="text-center text-gray-500 py-8">Seu carrinho está vazio</p>
+                <div class="text-center py-8">
+                    <i class="fas fa-shopping-cart text-[#eaeaea] text-4xl mb-3"></i>
+                    <p class="text-[#717171]">Seu carrinho está vazio</p>
+                </div>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
-                <div class="flex justify-between mb-2">
-                    <span>Subtotal:</span>
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+                <div class="flex justify-between mb-3 pb-3 border-b border-[#eaeaea]">
+                    <span>Subtotal</span>
                     <span id="cartSubtotal">R$ 0,00</span>
                 </div>
-                <div class="flex justify-between mb-2">
-                    <span>Taxa de Entrega:</span>
+                <div class="flex justify-between mb-3 pb-3 border-b border-[#eaeaea]">
+                    <span>Taxa de Entrega</span>
                     <span id="deliveryFee">R$ 5,00</span>
                 </div>
-                <div class="flex justify-between font-bold text-lg border-t pt-3">
-                    <span>Total:</span>
+                <div class="flex justify-between font-bold text-lg pt-3">
+                    <span>Total</span>
                     <span id="cartTotal">R$ 5,00</span>
                 </div>
             </div>
             
-            <button onclick="showPage('checkout')" id="checkoutButton" class="w-full py-3 bg-red-500 text-white rounded-lg font-bold hover:bg-red-600 transition-colors disabled:opacity-50" disabled>
+            <button onclick="checkout()" id="checkoutButton" class="w-full py-3 ifood-btn text-white rounded-lg font-bold hover:bg-[#c2121f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 Finalizar Compra
             </button>
         </div>
@@ -273,84 +543,109 @@
     <!-- Página de Checkout -->
     <div id="checkout" class="page pb-16 md:pb-0 md:pt-16">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-2xl font-bold mb-6 flex items-center">
-                <i class="fas fa-credit-card text-red-500 mr-2"></i>
-                Finalizar Pedido
-            </h1>
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-xl font-bold flex items-center">
+                    <i class="fas fa-credit-card text-[#ea1d2c] mr-2"></i>
+                    Finalizar Pedido
+                </h1>
+                <button onclick="showPage('carrinho')" class="text-[#ea1d2c] text-sm font-medium">
+                    <i class="fas fa-chevron-left mr-1"></i> Voltar
+                </button>
+            </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
+            <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
                 <h2 class="text-lg font-bold mb-3">Resumo do Pedido</h2>
-                <div id="checkoutItems" class="mb-4">
+                <div id="checkoutItems" class="mb-4 space-y-3">
                     <!-- Itens serão carregados aqui -->
                 </div>
-                <div class="border-t pt-3">
+                <div class="border-t border-[#eaeaea] pt-3">
                     <div class="flex justify-between font-bold">
-                        <span>Total:</span>
+                        <span>Total</span>
                         <span id="checkoutTotal">R$ 0,00</span>
                     </div>
                 </div>
             </div>
             
             <form id="checkoutForm" class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Nome Completo</label>
-                    <input type="text" id="nomeCliente" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-700 dark:text-gray-300 mb-1">Rua/Avenida</label>
-                        <input type="text" id="ruaCliente" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <h2 class="text-lg font-bold mb-3">Informações de Entrega</h2>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[#3f3e3e] text-sm mb-1">Nome Completo</label>
+                            <input type="text" id="nomeCliente" required 
+                                   class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[#3f3e3e] text-sm mb-1">Rua/Avenida</label>
+                                <input type="text" id="ruaCliente" required 
+                                       class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[#3f3e3e] text-sm mb-1">Número</label>
+                                <input type="text" id="numeroCasa" required 
+                                       class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#3f3e3e] text-sm mb-1">Bairro</label>
+                            <input type="text" id="bairroCliente" required 
+                                   class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#3f3e3e] text-sm mb-1">Complemento (Opcional)</label>
+                            <input type="text" id="complementoCliente" 
+                                   class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none" 
+                                   placeholder="Apartamento, bloco, referência...">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#3f3e3e] text-sm mb-1">Telefone</label>
+                            <input type="tel" id="telefoneCliente" required 
+                                   class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none" 
+                                   placeholder="(00) 00000-0000">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-gray-700 dark:text-gray-300 mb-1">Número</label>
-                        <input type="text" id="numeroCasa" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-                    </div>
                 </div>
                 
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Bairro</label>
-                    <input type="text" id="bairroCliente" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
-                </div>
-                
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Complemento (Opcional)</label>
-                    <input type="text" id="complementoCliente" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700" placeholder="Apartamento, bloco, referência...">
-                </div>
-                
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Telefone</label>
-                    <input type="tel" id="telefoneCliente" required class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700" placeholder="(00) 00000-0000">
-                </div>
-                
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Forma de Pagamento</label>
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <h2 class="text-lg font-bold mb-3">Forma de Pagamento</h2>
                     <div class="space-y-2">
-                        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:border-red-500 dark:border-gray-700">
-                            <input type="radio" name="payment" value="dinheiro" checked class="mr-2 text-red-500"> 
-                            <i class="fas fa-money-bill-wave text-red-500 mr-2"></i>
-                            Dinheiro
+                        <label class="flex items-center p-3 border border-[#eaeaea] rounded-lg hover:border-[#ea1d2c]">
+                            <input type="radio" name="payment" value="dinheiro" checked class="mr-3 h-4 w-4 text-[#ea1d2c] focus:ring-[#ea1d2c]"> 
+                            <div class="flex items-center">
+                                <i class="fas fa-money-bill-wave text-[#ea1d2c] mr-2"></i>
+                                <span>Dinheiro</span>
+                            </div>
                         </label>
-                        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:border-red-500 dark:border-gray-700">
-                            <input type="radio" name="payment" value="cartao" class="mr-2 text-red-500"> 
-                            <i class="fas fa-credit-card text-red-500 mr-2"></i>
-                            Cartão
+                        <label class="flex items-center p-3 border border-[#eaeaea] rounded-lg hover:border-[#ea1d2c]">
+                            <input type="radio" name="payment" value="cartao" class="mr-3 h-4 w-4 text-[#ea1d2c] focus:ring-[#ea1d2c]"> 
+                            <div class="flex items-center">
+                                <i class="fas fa-credit-card text-[#ea1d2c] mr-2"></i>
+                                <span>Cartão</span>
+                            </div>
                         </label>
-                        <label class="flex items-center p-3 border border-gray-300 rounded-lg hover:border-red-500 dark:border-gray-700">
-                            <input type="radio" name="payment" value="pix" class="mr-2 text-red-500"> 
-                            <i class="fas fa-qrcode text-red-500 mr-2"></i>
-                            Pix
+                        <label class="flex items-center p-3 border border-[#eaeaea] rounded-lg hover:border-[#ea1d2c]">
+                            <input type="radio" name="payment" value="pix" class="mr-3 h-4 w-4 text-[#ea1d2c] focus:ring-[#ea1d2c]"> 
+                            <div class="flex items-center">
+                                <i class="fas fa-qrcode text-[#ea1d2c] mr-2"></i>
+                                <span>Pix</span>
+                            </div>
                         </label>
                     </div>
-                </div>
-                
-                <div id="trocoField" class="hidden">
-                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Troco para quanto?</label>
-                    <input type="text" id="trocoPara" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-800 dark:border-gray-700">
+                    
+                    <div id="trocoField" class="mt-3 hidden">
+                        <label class="block text-[#3f3e3e] text-sm mb-1">Troco para quanto?</label>
+                        <input type="text" id="trocoPara" 
+                               class="w-full p-3 border border-[#eaeaea] rounded-lg ifood-input focus:outline-none">
+                    </div>
                 </div>
                 
                 <div class="pt-4">
-                    <button type="submit" class="w-full py-3 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition-colors">
+                    <button type="submit" class="w-full py-3 bg-[#3fbb31] text-white rounded-lg font-bold hover:bg-[#35a228] transition-colors">
                         Confirmar Pedido
                     </button>
                 </div>
@@ -360,14 +655,14 @@
 
     <!-- Modal de Confirmação -->
     <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6 mx-4">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-check text-green-500 dark:text-green-300 text-2xl"></i>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-[#e1f5df] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-[#3fbb31] text-2xl"></i>
                 </div>
                 <h2 class="text-xl font-bold mb-2">Pedido Confirmado!</h2>
-                <p class="text-gray-600 dark:text-gray-300 mb-6">Seu pedido foi recebido e está sendo preparado.</p>
-                <button onclick="closeConfirmationModal()" class="w-full py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                <p class="text-[#717171] mb-6">Seu pedido foi recebido e está sendo preparado.</p>
+                <button onclick="closeConfirmationModal()" class="w-full py-2 ifood-btn text-white rounded-lg hover:bg-[#c2121f] transition-colors">
                     Voltar ao Início
                 </button>
             </div>
@@ -377,43 +672,47 @@
     <script>
         // Configuração do Tailwind
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        orange: {
-                            500: '#ff0000',  // Vermelho puro
-                            600: '#cc0000'   // Vermelho mais escuro
-                        }
+                        'ifood-red': '#ea1d2c',
+                        'ifood-dark-red': '#c2121f',
+                        'ifood-gray': '#f7f7f7',
+                        'ifood-dark-gray': '#3f3e3e',
+                        'ifood-light-gray': '#eaeaea',
+                        'ifood-green': '#3fbb31'
                     }
                 }
             }
         };
 
+        // Configuração da API
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+
         // Dados dos produtos
         const products = {
             hamburgueres: [
-                { id: 1, name: "Hambúrguer Clássico", price: 20.00, description: "Pão, carne, queijo e salada", image: "images/Hambúrguer Clássico.jpeg" },
-                { id: 2, name: "Cheeseburguer", price: 22.00, description: "Com queijo derretido", image: "images/cheeseburguer.jpeg" },
-                { id: 3, name: "Bacon Burguer", price: 25.00, description: "Com bacon crocante", image: "images/Bacon Burguer.jpeg" },
-                { id: 4, name: "Vegetariano", price: 18.00, description: "Opção sem carne", image: "images/Vegetariano.jpeg" },
-                { id: 5, name: "X-Tudo", price: 28.00, description: "Com tudo que você imagina", image: "images/X-Tudo.jpeg" }
+                { id: 1, name: "Hambúrguer Clássico", price: 20.00, description: "Pão, carne, queijo e salada", image: "images/Hambúrguer Clássico.jpeg", featured: true },
+                { id: 2, name: "Cheeseburguer", price: 22.00, description: "Com queijo derretido", image: "images/cheeseburguer.jpeg", featured: true },
+                { id: 3, name: "Bacon Burguer", price: 25.00, description: "Com bacon crocante", image: "images/Bacon Burguer.jpeg", featured: false },
+                { id: 4, name: "Vegetariano", price: 18.00, description: "Opção sem carne", image: "images/Vegetariano.jpeg", featured: false },
+                { id: 5, name: "X-Tudo", price: 28.00, description: "Com tudo que você imagina", image: "images/X-Tudo.jpeg", featured: true }
             ],
             bebidas: [
-                { id: 6, name: "Refrigerante", price: 6.00, description: "Lata 350ml", image: "images/Refrigerante.jpeg" },
-                { id: 7, name: "Suco Natural", price: 8.00, description: "Copão 500ml", image: "images/Suco Natural.jpeg" },
-                { id: 8, name: "Cerveja", price: 10.00, description: "Long neck", image: "images/Cerveja.jpeg" },
-                { id: 9, name: "Água Mineral", price: 4.00, description: "Garrafa 500ml", image: "images/Água Mineral.jpeg" }
+                { id: 6, name: "Refrigerante", price: 6.00, description: "Lata 350ml", image: "images/Refrigerante.jpeg", featured: true },
+                { id: 7, name: "Suco Natural", price: 8.00, description: "Copão 500ml", image: "images/Suco Natural.jpeg", featured: false },
+                { id: 8, name: "Cerveja", price: 10.00, description: "Long neck", image: "images/Cerveja.jpeg", featured: false },
+                { id: 9, name: "Água Mineral", price: 4.00, description: "Garrafa 500ml", image: "images/Água Mineral.jpeg", featured: true }
             ],
             sobremesas: [
-                { id: 10, name: "Sorvete", price: 12.00, description: "Casquinha", image: "images/Sorvete.jpeg" },
-                { id: 11, name: "Brownie", price: 10.00, description: "Com sorvete", image: "images/Brownie.jpeg" },
-                { id: 12, name: "Milk Shake", price: 15.00, description: "500ml", image: "sobre.jpeg" }
+                { id: 10, name: "Sorvete", price: 12.00, description: "Casquinha", image: "images/Sorvete.jpeg", featured: true },
+                { id: 11, name: "Brownie", price: 10.00, description: "Com sorvete", image: "images/Brownie.jpeg", featured: true },
+                { id: 12, name: "Milk Shake", price: 15.00, description: "500ml", image: "sobre.jpeg", featured: false }
             ],
             pizzas: [
-                { id: 13, name: "Pizza Margherita", price: 35.00, description: "Molho, mussarela e manjericão", image: "images/Pizza-Margherita.jpeg" },
-                { id: 14, name: "Pizza Calabresa", price: 40.00, description: "Calabresa e cebola", image: "images/calabresa.jpeg" },
-                { id: 15, name: "Pizza 4 Queijos", price: 45.00, description: "Mussarela, provolone, parmesão e gorgonzola", image: "images/Pizza-4-Queijos.jpeg" }
+                { id: 13, name: "Pizza Margherita", price: 35.00, description: "Molho, mussarela e manjericão", image: "images/Pizza-Margherita.jpeg", featured: true },
+                { id: 14, name: "Pizza Calabresa", price: 40.00, description: "Calabresa e cebola", image: "images/calabresa.jpeg", featured: true },
+                { id: 15, name: "Pizza 4 Queijos", price: 45.00, description: "Mussarela, provolone, parmesão e gorgonzola", image: "images/Pizza-4-Queijos.jpeg", featured: false }
             ]
         };
 
@@ -421,6 +720,7 @@
         let cart = [];
         const deliveryFee = 5.00;
         const whatsappNumber = "5584991612793"; // Número da hamburgueria
+        let currentUser = null;
 
         // Funções de navegação
         function showPage(pageId) {
@@ -433,27 +733,89 @@
             document.getElementById(pageId).classList.add('active');
             
             // Atualizar menu de navegação
-            document.querySelectorAll('.page-link').forEach(link => {
-                link.classList.remove('active', 'text-red-500', 'border-red-500');
-                link.classList.add('text-gray-500', 'dark:text-gray-400');
+            document.querySelectorAll('.nav-item').forEach(link => {
+                link.classList.remove('active', 'text-[#ea1d2c]');
+                link.classList.add('text-[#717171]');
             });
             
-            // Se não for a página de checkout, destacar o link correspondente
-            if (pageId !== 'checkout' && pageId !== 'carrinho') {
+            // Se não for a página de login/registro, destacar o link correspondente
+            if (pageId !== 'login' && pageId !== 'register' && pageId !== 'profile' && pageId !== 'checkout' && pageId !== 'carrinho') {
                 const activeLink = document.querySelector(`button[onclick="showPage('${pageId}')"]`);
                 if (activeLink) {
-                    activeLink.classList.add('active', 'text-red-500', 'border-red-500');
-                    activeLink.classList.remove('text-gray-500', 'dark:text-gray-400');
+                    activeLink.classList.add('active', 'text-[#ea1d2c]');
+                    activeLink.classList.remove('text-[#717171]');
                 }
             }
             
             // Carregar conteúdo específico da página se necessário
+            if (pageId === 'home') loadFeaturedProducts();
             if (pageId === 'hamburgueres') loadProducts('hamburgueres', 'burgersList');
             if (pageId === 'bebidas') loadProducts('bebidas', 'drinksList');
             if (pageId === 'sobremesas') loadProducts('sobremesas', 'dessertsList');
             if (pageId === 'pizzas') loadProducts('pizzas', 'pizzasList');
             if (pageId === 'carrinho') updateCartDisplay();
             if (pageId === 'checkout') updateCheckoutDisplay();
+            if (pageId === 'profile') loadProfile();
+            
+            // Fechar menu do usuário
+            document.getElementById('userMenu').classList.add('hidden');
+        }
+
+        // Alternar menu do usuário
+        function toggleUserMenu() {
+            const userMenu = document.getElementById('userMenu');
+            userMenu.classList.toggle('hidden');
+        }
+
+        // Fechar menu do usuário ao clicar fora
+        document.addEventListener('click', function(event) {
+            const userMenu = document.getElementById('userMenu');
+            const userButton = document.querySelector('button[onclick="toggleUserMenu()"]');
+            
+            if (!userMenu.contains(event.target) && !userButton.contains(event.target)) {
+                userMenu.classList.add('hidden');
+            }
+        });
+
+        // Carregar produtos em destaque
+        function loadFeaturedProducts() {
+            const container = document.getElementById('featuredProducts');
+            container.innerHTML = '';
+            
+            // Pegar 4 produtos em destaque de todas as categorias
+            const featured = [];
+            Object.values(products).forEach(category => {
+                category.forEach(product => {
+                    if (product.featured && featured.length < 4) {
+                        featured.push(product);
+                    }
+                });
+            });
+            
+            featured.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card bg-white rounded-lg overflow-hidden shadow-sm flex';
+                
+                productCard.innerHTML = `
+                    <div class="image-container w-1/3">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="p-3 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold">${product.name}</h3>
+                            <p class="text-[#717171] text-xs mt-1">${product.description}</p>
+                        </div>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-[#ea1d2c] font-bold">R$ ${product.price.toFixed(2)}</span>
+                            <button onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image}')" 
+                                    class="px-3 py-1 bg-[#ea1d2c] text-white rounded hover:bg-[#c2121f] transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(productCard);
+            });
         }
 
         // Carregar produtos em uma página
@@ -463,19 +825,21 @@
             
             products[category].forEach(product => {
                 const productCard = document.createElement('div');
-                productCard.className = 'product-card bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md animate__animated animate__fadeIn';
+                productCard.className = 'product-card bg-white rounded-lg overflow-hidden shadow-sm flex';
                 
                 productCard.innerHTML = `
-                    <div class="image-container">
+                    <div class="image-container w-1/3">
                         <img src="${product.image}" alt="${product.name}">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg">${product.name}</h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">${product.description}</p>
-                        <div class="flex justify-between items-center mt-4">
-                            <span class="text-red-500 font-bold">R$ ${product.price.toFixed(2)}</span>
+                    <div class="p-3 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold">${product.name}</h3>
+                            <p class="text-[#717171] text-xs mt-1">${product.description}</p>
+                        </div>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-[#ea1d2c] font-bold">R$ ${product.price.toFixed(2)}</span>
                             <button onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image}')" 
-                                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                                    class="px-3 py-1 bg-[#ea1d2c] text-white rounded hover:bg-[#c2121f] transition-colors">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -487,6 +851,25 @@
 
         // Funções do carrinho
         function addToCart(id, name, price, image) {
+            // Verificar se o usuário está logado
+            if (!currentUser) {
+                Swal.fire({
+                    title: 'Faça login para continuar',
+                    text: 'Você precisa estar logado para adicionar itens ao carrinho',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ea1d2c',
+                    cancelButtonColor: '#3f3e3e',
+                    confirmButtonText: 'Fazer login',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showPage('login');
+                    }
+                });
+                return;
+            }
+            
             const existingItem = cart.find(item => item.id === id);
             
             if (existingItem) {
@@ -516,7 +899,9 @@
                 icon: 'success',
                 title: `${name} adicionado ao carrinho`,
                 showConfirmButton: false,
-                timer: 1000
+                timer: 1000,
+                background: '#f7f7f7',
+                color: '#3f3e3e'
             });
         }
 
@@ -555,7 +940,12 @@
             const totalElement = document.getElementById('cartTotal');
             
             if (cart.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-8">Seu carrinho está vazio</p>';
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <i class="fas fa-shopping-cart text-[#eaeaea] text-4xl mb-3"></i>
+                        <p class="text-[#717171]">Seu carrinho está vazio</p>
+                    </div>
+                `;
                 subtotalElement.textContent = 'R$ 0,00';
                 totalElement.textContent = 'R$ 5,00';
                 return;
@@ -569,23 +959,23 @@
                 subtotal += itemTotal;
                 
                 const cartItem = document.createElement('div');
-                cartItem.className = 'cart-item bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 flex items-center';
+                cartItem.className = 'cart-item bg-white rounded-lg shadow-sm p-3 flex items-center';
                 cartItem.innerHTML = `
                     <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded mr-3">
                     <div class="flex-grow">
                         <h4 class="font-medium">${item.name}</h4>
-                        <p class="text-sm text-gray-500">R$ ${item.price.toFixed(2)}</p>
+                        <p class="text-[#717171] text-sm">R$ ${item.price.toFixed(2)}</p>
                     </div>
                     <div class="flex items-center">
-                        <button onclick="removeFromCart(${item.id})" class="px-2 py-1 bg-gray-200 text-gray-700 rounded-l hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
+                        <button onclick="removeFromCart(${item.id})" class="px-2 py-1 bg-[#eaeaea] text-[#3f3e3e] rounded-l hover:bg-[#d4d4d4]">
                             <i class="fas fa-minus text-xs"></i>
                         </button>
-                        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-600">${item.quantity}</span>
-                        <button onclick="addToCart(${item.id}, '${item.name}', ${item.price}, '${item.image}')" class="px-2 py-1 bg-gray-200 text-gray-700 rounded-r hover:bg-gray-300 dark:bg-gray-700 dark:text-white">
+                        <span class="px-3 py-1 bg-[#f7f7f7]">${item.quantity}</span>
+                        <button onclick="addToCart(${item.id}, '${item.name}', ${item.price}, '${item.image}')" class="px-2 py-1 bg-[#eaeaea] text-[#3f3e3e] rounded-r hover:bg-[#d4d4d4]">
                             <i class="fas fa-plus text-xs"></i>
                         </button>
                     </div>
-                    <button onclick="removeAllFromCart(${item.id})" class="cart-item-remove ml-3 text-red-500 hover:text-red-700">
+                    <button onclick="removeAllFromCart(${item.id})" class="cart-item-remove ml-3 text-[#ea1d2c] hover:text-[#c2121f]">
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
@@ -615,7 +1005,7 @@
                 subtotal += itemTotal;
                 
                 const itemElement = document.createElement('div');
-                itemElement.className = 'flex justify-between py-2 border-b border-gray-200 dark:border-gray-700';
+                itemElement.className = 'flex justify-between py-2 border-b border-[#eaeaea]';
                 itemElement.innerHTML = `
                     <span>${item.quantity}x ${item.name}</span>
                     <span>R$ ${itemTotal.toFixed(2)}</span>
@@ -625,7 +1015,7 @@
             
             // Adicionar taxa de entrega
             const deliveryElement = document.createElement('div');
-            deliveryElement.className = 'flex justify-between py-2 border-b border-gray-200 dark:border-gray-700';
+            deliveryElement.className = 'flex justify-between py-2 border-b border-[#eaeaea]';
             deliveryElement.innerHTML = `
                 <span>Taxa de Entrega</span>
                 <span>R$ ${deliveryFee.toFixed(2)}</span>
@@ -634,6 +1024,29 @@
             
             const total = subtotal + deliveryFee;
             totalElement.textContent = `R$ ${total.toFixed(2)}`;
+        }
+
+        // Função para ir para o checkout
+        function checkout() {
+            if (!currentUser) {
+                Swal.fire({
+                    title: 'Faça login para continuar',
+                    text: 'Você precisa estar logado para finalizar o pedido',
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ea1d2c',
+                    cancelButtonColor: '#3f3e3e',
+                    confirmButtonText: 'Fazer login',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showPage('login');
+                    }
+                });
+                return;
+            }
+            
+            showPage('checkout');
         }
 
         // Funções do checkout
@@ -661,7 +1074,9 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Campos incompletos',
-                    text: 'Por favor, preencha todos os campos obrigatórios'
+                    text: 'Por favor, preencha todos os campos obrigatórios',
+                    background: '#f7f7f7',
+                    color: '#3f3e3e'
                 });
                 return;
             }
@@ -672,7 +1087,9 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Telefone inválido',
-                    text: 'Por favor, insira um número de telefone válido com DDD'
+                    text: 'Por favor, insira um número de telefone válido com DDD',
+                    background: '#f7f7f7',
+                    color: '#3f3e3e'
                 });
                 return;
             }
@@ -766,24 +1183,27 @@
                 product.description.toLowerCase().includes(searchTerm));
             
             if (filteredProducts.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-8">Nenhum produto encontrado</p>';
+                container.innerHTML = '<p class="text-center text-[#717171] py-8">Nenhum produto encontrado</p>';
                 return;
             }
             
             filteredProducts.forEach(product => {
                 const productCard = document.createElement('div');
-                productCard.className = 'product-card bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md animate__animated animate__fadeIn';
+                productCard.className = 'product-card bg-white rounded-lg overflow-hidden shadow-sm flex';
+                
                 productCard.innerHTML = `
-                    <div class="image-container">
+                    <div class="image-container w-1/3">
                         <img src="${product.image}" alt="${product.name}">
                     </div>
-                    <div class="p-4">
-                        <h3 class="font-bold text-lg">${product.name}</h3>
-                        <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">${product.description}</p>
-                        <div class="flex justify-between items-center mt-4">
-                            <span class="text-red-500 font-bold">R$ ${product.price.toFixed(2)}</span>
+                    <div class="p-3 flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold">${product.name}</h3>
+                            <p class="text-[#717171] text-xs mt-1">${product.description}</p>
+                        </div>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-[#ea1d2c] font-bold">R$ ${product.price.toFixed(2)}</span>
                             <button onclick="addToCart(${product.id}, '${product.name}', ${product.price}, '${product.image}')" 
-                                    class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                                    class="px-3 py-1 bg-[#ea1d2c] text-white rounded hover:bg-[#c2121f] transition-colors">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
@@ -791,17 +1211,6 @@
                 `;
                 container.appendChild(productCard);
             });
-        }
-
-        // Alternar modo escuro/claro
-        document.getElementById('darkModeToggle').addEventListener('click', function() {
-            document.documentElement.classList.toggle('dark');
-            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
-        });
-
-        // Verificar preferência de modo escuro
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.documentElement.classList.add('dark');
         }
 
         // Abrir carrinho ao clicar no ícone
@@ -824,13 +1233,218 @@
             e.target.value = value;
         });
 
+        // Máscara para telefone no cadastro
+        document.getElementById('registerPhone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.substring(0, 11);
+            
+            if (value.length > 0) {
+                value = `(${value.substring(0, 2)}) ${value.substring(2)}`;
+                if (value.length > 9) {
+                    value = `${value.substring(0, 10)}-${value.substring(10)}`;
+                }
+            }
+            
+            e.target.value = value;
+        });
+
+        // Função auxiliar para mostrar erros
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro',
+                text: message,
+                background: '#f7f7f7',
+                color: '#3f3e3e'
+            });
+        }
+
+        // Funções de login/registro via API
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showError('Por favor, preencha todos os campos');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        senha: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Login bem-sucedido
+                    currentUser = {
+                        id: data.id,
+                        nome: data.nome,
+                        email: data.email,
+                        telefone: data.telefone
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserStatus();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Login realizado com sucesso!',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        background: '#f7f7f7',
+                        color: '#3f3e3e'
+                    });
+                    
+                    showPage('home');
+                } else {
+                    showError(data.message || 'Erro ao fazer login');
+                }
+            } catch (error) {
+                showError('Erro ao conectar com o servidor');
+                console.error('Login error:', error);
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            if (!name || !email || !phone || !password || !confirmPassword) {
+                showError('Por favor, preencha todos os campos');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('As senhas não coincidem');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nome: name,
+                        email: email,
+                        telefone: phone.replace(/\D/g, ''),
+                        senha: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Registro bem-sucedido
+                    currentUser = {
+                        id: data.id,
+                        nome: data.nome,
+                        email: data.email,
+                        telefone: data.telefone
+                    };
+                    
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserStatus();
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cadastro realizado com sucesso!',
+                        showConfirmButton: false,
+                        timer: 1500,
+                        background: '#f7f7f7',
+                        color: '#3f3e3e'
+                    });
+                    
+                    showPage('home');
+                } else {
+                    showError(data.message || 'Erro ao registrar');
+                }
+            } catch (error) {
+                showError('Erro ao conectar com o servidor');
+                console.error('Register error:', error);
+            }
+        });
+
+        // Função para carregar perfil
+        function loadProfile() {
+            if (!currentUser) {
+                showPage('login');
+                return;
+            }
+            
+            document.getElementById('profileName').textContent = currentUser.nome;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profilePhone').textContent = currentUser.telefone;
+        }
+
+        // Função para logout
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUserStatus();
+            showPage('home');
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Logout realizado com sucesso!',
+                showConfirmButton: false,
+                timer: 1500,
+                background: '#f7f7f7',
+                color: '#3f3e3e'
+            });
+        }
+
+        // Atualizar status do usuário na interface
+        function updateUserStatus() {
+            const userStatus = document.getElementById('userStatus');
+            const userNotLoggedIn = document.getElementById('userNotLoggedIn');
+            const userLoggedIn = document.getElementById('userLoggedIn');
+            const loggedInUserEmail = document.getElementById('loggedInUserEmail');
+            
+            if (currentUser) {
+                userStatus.textContent = 'Minha Conta';
+                userNotLoggedIn.classList.add('hidden');
+                userLoggedIn.classList.remove('hidden');
+                loggedInUserEmail.textContent = currentUser.email;
+            } else {
+                userStatus.textContent = 'Entrar';
+                userNotLoggedIn.classList.remove('hidden');
+                userLoggedIn.classList.add('hidden');
+            }
+        }
+
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
             // Carregar produtos da página inicial
+            loadFeaturedProducts();
             loadProducts('hamburgueres', 'burgersList');
             loadProducts('bebidas', 'drinksList');
             loadProducts('sobremesas', 'dessertsList');
             loadProducts('pizzas', 'pizzasList');
+            
+            // Verificar se há usuário logado
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserStatus();
+            }
             
             // Verificar se há itens no carrinho ao carregar
             const savedCart = localStorage.getItem('cart');
@@ -844,6 +1458,123 @@
         window.addEventListener('beforeunload', function() {
             localStorage.setItem('cart', JSON.stringify(cart));
         });
+    </script>
+    <script>
+          // Configuração da API
+          // Função de registro melhorada
+async function registrarUsuario() {
+    const nome = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const telefone = document.getElementById('registerPhone').value.replace(/\D/g, '');
+    const senha = document.getElementById('registerPassword').value;
+    const confirmarSenha = document.getElementById('registerConfirmPassword').value;
+
+    // Validação básica no frontend
+    if (senha !== confirmarSenha) {
+        showError('As senhas não coincidem');
+        return;
+    }
+
+    try {
+        const resposta = await fetch(`${API_BASE_URL}/usuarios`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                nome,
+                email,
+                telefone,
+                senha,
+                confirmar_senha: confirmarSenha  // Note o underline para corresponder ao backend
+            }),
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(dados.message || 'Erro ao registrar');
+        }
+
+        // Registro bem-sucedido - faz login automaticamente
+        currentUser = {
+            id: dados.id,
+            nome: dados.nome,
+            email: dados.email,
+            telefone: dados.telefone
+        };
+        
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        updateUserStatus();
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Cadastro realizado com sucesso!',
+            showConfirmButton: false,
+            timer: 1500,
+            background: '#f7f7f7',
+            color: '#3f3e3e'
+        });
+        
+        showPage('home');
+        
+    } catch (erro) {
+        console.error('Erro no registro:', erro);
+        showError(erro.message);
+    }
+}
+
+// Vincular ao formulário (substitua o evento anterior)
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    registrarUsuario();
+});
+        const API_BASE_URL = 'http://localhost:5000';
+
+async function registrarUsuario() {
+    const nome = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const telefone = document.getElementById('registerPhone').value;
+    const senha = document.getElementById('registerPassword').value;
+    const confirmarSenha = document.getElementById('registerConfirmPassword').value;
+
+    try {
+        const resposta = await fetch(`${API_BASE_URL}/usuarios`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                nome,
+                email,
+                telefone,
+                senha,
+                confirmar_senha: confirmarSenha
+            }),
+        });
+
+        if (!resposta.ok) {
+            const erro = await resposta.json();
+            throw new Error(erro.erro || 'Erro ao registrar');
+        }
+
+        const dados = await resposta.json();
+        console.log('Usuário registrado:', dados.usuario);
+        alert(dados.mensagem);
+        showPage('login');
+        
+    } catch (erro) {
+        console.error('Erro no registro:', erro);
+        alert(erro.message);
+    }
+}
+
+// Vincular ao formulário
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    registrarUsuario();
+});
+      
     </script>
 </body>
 </html>
