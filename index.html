@@ -16,7 +16,7 @@
             --ifood-dark-gray: #3f3e3e;
             --ifood-light-gray: #eaeaea;
         }
-        
+
         html {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -47,11 +47,10 @@
             opacity: 1;
         }
         
-        /* Improved image container */
         .image-container {
             position: relative;
             width: 100%;
-            padding-top: 75%; /* 4:3 aspect ratio */
+            padding-top: 75%;
             overflow: hidden;
             border-radius: 8px 8px 0 0;
         }
@@ -68,18 +67,15 @@
             transform: scale(1.05);
         }
         
-        /* Category cards */
         .category-card .image-container {
-            padding-top: 75%; /* Same aspect ratio as products */
+            padding-top: 75%;
         }
         
-        /* Header styles */
         .header {
             background: linear-gradient(to right, var(--ifood-red), var(--ifood-dark-red));
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        /* Navigation styles */
         .nav-item {
             position: relative;
         }
@@ -95,7 +91,6 @@
             border-radius: 3px;
         }
         
-        /* Button styles */
         .ifood-btn {
             background-color: var(--ifood-red);
             transition: background-color 0.3s;
@@ -104,15 +99,37 @@
             background-color: var(--ifood-dark-red);
         }
         
-        /* Cart styles */
         .cart-badge {
             background-color: var(--ifood-dark-red);
         }
         
-        /* Input styles */
         .ifood-input:focus {
             border-color: var(--ifood-red);
             box-shadow: 0 0 0 1px var(--ifood-red);
+        }
+
+        /* Menu para mobile */
+        @media (max-width: 767px) {
+            #mainNav {
+                transform: translateY(100%);
+                bottom: 0;
+                top: auto;
+                border-top: 1px solid var(--ifood-light-gray);
+            }
+            
+            #mainNav.open {
+                transform: translateY(0);
+            }
+            
+            /* Ajuste o padding para o botão do carrinho quando o menu estiver aberto */
+            #cartButton {
+                bottom: 80px;
+            }
+            
+            /* Ajuste o botão de tema quando o menu estiver aberto */
+            #darkModeToggle {
+                top: 80px;
+            }
         }
     </style>
 </head>
@@ -129,9 +146,14 @@
         <span id="cartCount" class="absolute -top-2 -right-2 bg-[#c2121f] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hidden">0</span>
     </button>
 
+    <!-- Botão do Menu Hamburger (visível apenas em mobile) -->
+    <button id="hamburgerButton" class="md:hidden fixed bottom-6 left-6 z-50 p-4 bg-[#ea1d2c] text-white rounded-full shadow-lg hover:bg-[#c2121f] transition-colors">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <!-- Menu de Navegação -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-40 md:top-0 md:bottom-auto border-t border-[#eaeaea]">
-        <div class="container mx-auto flex justify-around md:justify-center md:space-x-10">
+    <nav id="mainNav" class="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-40 md:static md:bg-transparent md:shadow-none transform translate-y-full md:transform-none transition-transform duration-300 ease-in-out">
+        <div class="container mx-auto flex flex-col md:flex-row justify-around md:justify-center md:space-x-10 bg-white md:bg-transparent">
             <button onclick="showPage('home')" class="nav-item page-link active py-3 px-4 text-[#ea1d2c] flex flex-col items-center">
                 <i class="fas fa-home text-xl mb-1"></i>
                 <span class="text-xs">Início</span>
@@ -686,9 +708,6 @@
             }
         };
 
-        // Configuração da API
-        const API_BASE_URL = 'http://127.0.0.1:5000';
-
         // Dados dos produtos
         const products = {
             hamburgueres: [
@@ -719,26 +738,23 @@
         // Variáveis globais
         let cart = [];
         const deliveryFee = 5.00;
-        const whatsappNumber = "5584991612793"; // Número da hamburgueria
+        const whatsappNumber = "5584991612793";
         let currentUser = null;
+        const API_BASE_URL = "https://api-login-1-2ugs.onrender.com/"; // Altere para a URL da sua API Flask
 
         // Funções de navegação
         function showPage(pageId) {
-            // Esconder todas as páginas
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
             
-            // Mostrar a página solicitada
             document.getElementById(pageId).classList.add('active');
             
-            // Atualizar menu de navegação
             document.querySelectorAll('.nav-item').forEach(link => {
                 link.classList.remove('active', 'text-[#ea1d2c]');
                 link.classList.add('text-[#717171]');
             });
             
-            // Se não for a página de login/registro, destacar o link correspondente
             if (pageId !== 'login' && pageId !== 'register' && pageId !== 'profile' && pageId !== 'checkout' && pageId !== 'carrinho') {
                 const activeLink = document.querySelector(`button[onclick="showPage('${pageId}')"]`);
                 if (activeLink) {
@@ -747,7 +763,6 @@
                 }
             }
             
-            // Carregar conteúdo específico da página se necessário
             if (pageId === 'home') loadFeaturedProducts();
             if (pageId === 'hamburgueres') loadProducts('hamburgueres', 'burgersList');
             if (pageId === 'bebidas') loadProducts('bebidas', 'drinksList');
@@ -757,7 +772,6 @@
             if (pageId === 'checkout') updateCheckoutDisplay();
             if (pageId === 'profile') loadProfile();
             
-            // Fechar menu do usuário
             document.getElementById('userMenu').classList.add('hidden');
         }
 
@@ -772,7 +786,7 @@
             const userMenu = document.getElementById('userMenu');
             const userButton = document.querySelector('button[onclick="toggleUserMenu()"]');
             
-            if (!userMenu.contains(event.target) && !userButton.contains(event.target)) {
+            if (!userMenu.contains(event.target) && event.target !== userButton && !userButton.contains(event.target)) {
                 userMenu.classList.add('hidden');
             }
         });
@@ -782,7 +796,6 @@
             const container = document.getElementById('featuredProducts');
             container.innerHTML = '';
             
-            // Pegar 4 produtos em destaque de todas as categorias
             const featured = [];
             Object.values(products).forEach(category => {
                 category.forEach(product => {
@@ -851,7 +864,6 @@
 
         // Funções do carrinho
         function addToCart(id, name, price, image) {
-            // Verificar se o usuário está logado
             if (!currentUser) {
                 Swal.fire({
                     title: 'Faça login para continuar',
@@ -886,22 +898,18 @@
             
             updateCartCount();
             
-            // Feedback visual
             const button = event.target.closest('button');
             button.classList.add('animate__animated', 'animate__bounce');
             setTimeout(() => {
                 button.classList.remove('animate__animated', 'animate__bounce');
             }, 1000);
             
-            // Mostrar notificação
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
                 title: `${name} adicionado ao carrinho`,
                 showConfirmButton: false,
-                timer: 1000,
-                background: '#f7f7f7',
-                color: '#3f3e3e'
+                timer: 1000
             });
         }
 
@@ -1013,7 +1021,6 @@
                 container.appendChild(itemElement);
             });
             
-            // Adicionar taxa de entrega
             const deliveryElement = document.createElement('div');
             deliveryElement.className = 'flex justify-between py-2 border-b border-[#eaeaea]';
             deliveryElement.innerHTML = `
@@ -1053,7 +1060,6 @@
         document.getElementById('checkoutForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Obter dados do formulário
             const nome = document.getElementById('nomeCliente').value;
             const rua = document.getElementById('ruaCliente').value;
             const numero = document.getElementById('numeroCasa').value;
@@ -1063,38 +1069,30 @@
             const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
             const trocoPara = document.getElementById('trocoPara')?.value || '';
             
-            // Montar endereço completo
             let enderecoCompleto = `${rua}, ${numero}, ${bairro}`;
             if (complemento) {
                 enderecoCompleto += ` (${complemento})`;
             }
             
-            // Validar campos
             if (!nome || !rua || !numero || !bairro || !telefone) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Campos incompletos',
-                    text: 'Por favor, preencha todos os campos obrigatórios',
-                    background: '#f7f7f7',
-                    color: '#3f3e3e'
+                    text: 'Por favor, preencha todos os campos obrigatórios'
                 });
                 return;
             }
             
-            // Validar telefone
             const phoneRegex = /^(\+55)?[\s-]?\(?\d{2}\)?[\s-]?\d{4,5}[\s-]?\d{4}$/;
             if (!phoneRegex.test(telefone)) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Telefone inválido',
-                    text: 'Por favor, insira um número de telefone válido com DDD',
-                    background: '#f7f7f7',
-                    color: '#3f3e3e'
+                    text: 'Por favor, insira um número de telefone válido com DDD'
                 });
                 return;
             }
             
-            // Montar mensagem para WhatsApp
             let message = `*🍔 NOVO PEDIDO - NINTENDO BURG 🍔*\n\n`;
             message += `*👤 Cliente:* ${nome}\n`;
             message += `*📞 Telefone:* ${telefone}\n`;
@@ -1121,13 +1119,9 @@
             message += `⏱️ *Tempo estimado:* 30-40 minutos\n`;
             message += `🚴 *Entregador:* A caminho após confirmação`;
             
-            // Codificar a mensagem para URL
             const encodedMessage = encodeURIComponent(message);
-            
-            // Abrir WhatsApp com a mensagem
             window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
             
-            // Mostrar modal de confirmação
             document.getElementById('confirmationModal').classList.remove('hidden');
         });
 
@@ -1135,13 +1129,11 @@
         function closeConfirmationModal() {
             document.getElementById('confirmationModal').classList.add('hidden');
             
-            // Limpar carrinho e voltar para a página inicial
             cart = [];
             updateCartCount();
             updateCartDisplay();
             showPage('home');
             
-            // Limpar formulário
             document.getElementById('checkoutForm').reset();
         }
 
@@ -1253,9 +1245,7 @@
             Swal.fire({
                 icon: 'error',
                 title: 'Erro',
-                text: message,
-                background: '#f7f7f7',
-                color: '#3f3e3e'
+                text: message
             });
         }
 
@@ -1272,113 +1262,95 @@
             }
             
             try {
-                const response = await fetch(`${API_BASE_URL}/login`, {
+                const response = await fetch(`${API_BASE_URL}api/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         email: email,
-                        senha: password
+                        password: password
                     })
                 });
                 
                 const data = await response.json();
                 
-                if (response.ok) {
-                    // Login bem-sucedido
-                    currentUser = {
-                        id: data.id,
-                        nome: data.nome,
-                        email: data.email,
-                        telefone: data.telefone
-                    };
-                    
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    updateUserStatus();
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Login realizado com sucesso!',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        background: '#f7f7f7',
-                        color: '#3f3e3e'
-                    });
-                    
-                    showPage('home');
-                } else {
-                    showError(data.message || 'Erro ao fazer login');
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erro ao fazer login');
                 }
+                
+                currentUser = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('access_token', data.access_token);
+                
+                updateUserStatus();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Login realizado com sucesso!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                
+                showPage('home');
             } catch (error) {
-                showError('Erro ao conectar com o servidor');
                 console.error('Login error:', error);
+                showError(error.message || 'Erro ao conectar com o servidor');
             }
         });
 
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const name = document.getElementById('registerName').value;
+            const nome = document.getElementById('registerName').value;
             const email = document.getElementById('registerEmail').value;
-            const phone = document.getElementById('registerPhone').value;
+            const telefone = document.getElementById('registerPhone').value.replace(/\D/g, '');
             const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            
-            if (!name || !email || !phone || !password || !confirmPassword) {
-                showError('Por favor, preencha todos os campos');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
+            const confirmarSenha = document.getElementById('registerConfirmPassword').value;
+
+            if (password !== confirmarSenha) {
                 showError('As senhas não coincidem');
                 return;
             }
-            
+
             try {
-                const response = await fetch(`${API_BASE_URL}/usuarios`, {
+                const response = await fetch(`${API_BASE_URL}api/register`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        nome: name,
+                        nome: nome,
                         email: email,
-                        telefone: phone.replace(/\D/g, ''),
-                        senha: password
-                    })
+                        telefone: telefone,
+                        password: password,
+                        confirmar_senha: confirmarSenha
+                    }),
                 });
-                
+
                 const data = await response.json();
                 
-                if (response.ok) {
-                    // Registro bem-sucedido
-                    currentUser = {
-                        id: data.id,
-                        nome: data.nome,
-                        email: data.email,
-                        telefone: data.telefone
-                    };
-                    
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    updateUserStatus();
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cadastro realizado com sucesso!',
-                        showConfirmButton: false,
-                        timer: 1500,
-                        background: '#f7f7f7',
-                        color: '#3f3e3e'
-                    });
-                    
-                    showPage('home');
-                } else {
-                    showError(data.message || 'Erro ao registrar');
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erro ao registrar');
                 }
+
+                currentUser = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                localStorage.setItem('access_token', data.access_token);
+                
+                updateUserStatus();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cadastro realizado com sucesso!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                
+                showPage('home');
             } catch (error) {
-                showError('Erro ao conectar com o servidor');
-                console.error('Register error:', error);
+                console.error('Registration error:', error);
+                showError(error.message || 'Erro ao conectar com o servidor');
             }
         });
 
@@ -1398,6 +1370,7 @@
         function logout() {
             currentUser = null;
             localStorage.removeItem('currentUser');
+            localStorage.removeItem('access_token');
             updateUserStatus();
             showPage('home');
             
@@ -1405,9 +1378,7 @@
                 icon: 'success',
                 title: 'Logout realizado com sucesso!',
                 showConfirmButton: false,
-                timer: 1500,
-                background: '#f7f7f7',
-                color: '#3f3e3e'
+                timer: 1500
             });
         }
 
@@ -1430,6 +1401,35 @@
             }
         }
 
+        // Controle do menu hamburger
+        const hamburgerButton = document.getElementById('hamburgerButton');
+        const mainNav = document.getElementById('mainNav');
+        let isMenuOpen = false;
+
+        // Alternar menu
+        hamburgerButton.addEventListener('click', function() {
+            isMenuOpen = !isMenuOpen;
+            
+            if (isMenuOpen) {
+                mainNav.classList.add('open');
+                hamburgerButton.innerHTML = '<i class="fas fa-times"></i>';
+            } else {
+                mainNav.classList.remove('open');
+                hamburgerButton.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+
+        // Fechar menu ao clicar em um item (para mobile)
+        document.querySelectorAll('#mainNav button').forEach(button => {
+            button.addEventListener('click', function() {
+                if (window.innerWidth < 768) { // Somente para mobile
+                    isMenuOpen = false;
+                    mainNav.classList.remove('open');
+                    hamburgerButton.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+        });
+
         // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
             // Carregar produtos da página inicial
@@ -1441,7 +1441,9 @@
             
             // Verificar se há usuário logado
             const savedUser = localStorage.getItem('currentUser');
-            if (savedUser) {
+            const token = localStorage.getItem('access_token');
+            
+            if (savedUser && token) {
                 currentUser = JSON.parse(savedUser);
                 updateUserStatus();
             }
@@ -1458,123 +1460,6 @@
         window.addEventListener('beforeunload', function() {
             localStorage.setItem('cart', JSON.stringify(cart));
         });
-    </script>
-    <script>
-          // Configuração da API
-          // Função de registro melhorada
-async function registrarUsuario() {
-    const nome = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const telefone = document.getElementById('registerPhone').value.replace(/\D/g, '');
-    const senha = document.getElementById('registerPassword').value;
-    const confirmarSenha = document.getElementById('registerConfirmPassword').value;
-
-    // Validação básica no frontend
-    if (senha !== confirmarSenha) {
-        showError('As senhas não coincidem');
-        return;
-    }
-
-    try {
-        const resposta = await fetch(`${API_BASE_URL}/usuarios`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                nome,
-                email,
-                telefone,
-                senha,
-                confirmar_senha: confirmarSenha  // Note o underline para corresponder ao backend
-            }),
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok) {
-            throw new Error(dados.message || 'Erro ao registrar');
-        }
-
-        // Registro bem-sucedido - faz login automaticamente
-        currentUser = {
-            id: dados.id,
-            nome: dados.nome,
-            email: dados.email,
-            telefone: dados.telefone
-        };
-        
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-        updateUserStatus();
-        
-        Swal.fire({
-            icon: 'success',
-            title: 'Cadastro realizado com sucesso!',
-            showConfirmButton: false,
-            timer: 1500,
-            background: '#f7f7f7',
-            color: '#3f3e3e'
-        });
-        
-        showPage('home');
-        
-    } catch (erro) {
-        console.error('Erro no registro:', erro);
-        showError(erro.message);
-    }
-}
-
-// Vincular ao formulário (substitua o evento anterior)
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    registrarUsuario();
-});
-        const API_BASE_URL = 'http://localhost:5000';
-
-async function registrarUsuario() {
-    const nome = document.getElementById('registerName').value;
-    const email = document.getElementById('registerEmail').value;
-    const telefone = document.getElementById('registerPhone').value;
-    const senha = document.getElementById('registerPassword').value;
-    const confirmarSenha = document.getElementById('registerConfirmPassword').value;
-
-    try {
-        const resposta = await fetch(`${API_BASE_URL}/usuarios`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                nome,
-                email,
-                telefone,
-                senha,
-                confirmar_senha: confirmarSenha
-            }),
-        });
-
-        if (!resposta.ok) {
-            const erro = await resposta.json();
-            throw new Error(erro.erro || 'Erro ao registrar');
-        }
-
-        const dados = await resposta.json();
-        console.log('Usuário registrado:', dados.usuario);
-        alert(dados.mensagem);
-        showPage('login');
-        
-    } catch (erro) {
-        console.error('Erro no registro:', erro);
-        alert(erro.message);
-    }
-}
-
-// Vincular ao formulário
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    registrarUsuario();
-});
-      
     </script>
 </body>
 </html>
